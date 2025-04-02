@@ -1,5 +1,5 @@
 import { initGraph, loadPredefinedGraph, validateGraph, resetColorsDefi, rgbToHex } from './functions.js';
-import { addDynamicButton, populateGraphSelect } from '../../functions.js';
+import { addDynamicButton, populateGraphSelect, startTimer, stopTimer } from '../../functions.js';
 
 export const initDefiMode = () => {
     const cyDefi = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
@@ -10,7 +10,6 @@ export const initDefiMode = () => {
     const snapDistance = 50;
     const defaultColor = '#cccccc';
     let difficulty = "";
-    let startTime = Date.now();
 
     populateGraphSelect();
 
@@ -42,8 +41,7 @@ export const initDefiMode = () => {
                     }
                 });
 
-                startTime = Date.now();
-
+                startTimer();
             }, 100);
         } catch (error) {
             console.error("Erreur lors du chargement du graphe :", error.message);
@@ -65,8 +63,6 @@ export const initDefiMode = () => {
     }
 
     addDynamicButton("Je pense qu'il est impossible", 'impossible-btn', () => {
-
-        const timeElapsed = (Date.now() - startTime) / 1000;
         const hasTriedColoring = hasColoredNodes(cyDefi);
 
         if (!hasTriedColoring || timeElapsed < 10) {
@@ -79,11 +75,12 @@ export const initDefiMode = () => {
         }
 
         if (difficulty.trim().toLowerCase() === "impossible") {
+            const timeElapsed = stopTimer();
             Swal.fire({
                 icon: 'success',
                 title: 'Bonne analyse !',
                 html: `
-                    <p>✅ Ce graphe est effectivement impossible à colorer.</p>
+                    <p>✅ Ce graphe est effectivement impossible à colorer en ${timeElapsed}.</p>
                     <hr>
                     <p>
                         <strong>Justification :</strong><br>

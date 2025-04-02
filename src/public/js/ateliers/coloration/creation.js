@@ -1,4 +1,4 @@
-import { addDynamicButton, clearDynamicButtons, createRandomNode, highlightNode, resetHighlight } from '../../functions.js';
+import { addDynamicButton, clearDynamicButtons, createRandomNode, highlightNode, resetHighlight, startTimer } from '../../functions.js';
 import { initGraph, validateGraph, resetColorsLibre, rgbToHex } from './functions.js';
 import { colors } from '../../constants.js';
 
@@ -97,7 +97,7 @@ export const initCreationMode = () => {
             }
         });
 
-        addDynamicButton('Valider la Coloration', 'validate-graph-btn', () => validateGraph(cyLibre));
+        addDynamicButton('Valider la Coloration', 'validate-graph-btn', () => validateGraph(cyLibre, null));
         addDynamicButton('Réinitialiser la Coloration', 'reset-colors-btn', () => resetColorsLibre(cyLibre));
 
         let colorsConfig;
@@ -117,6 +117,7 @@ export const initCreationMode = () => {
         });
 
         cyLibre.layout({ name: 'preset' }).run();
+        startTimer();
 
         cyLibre.on('free', 'node', (evt) => {
             const colorNode = evt.target;

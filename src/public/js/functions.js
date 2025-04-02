@@ -1,3 +1,6 @@
+let startTime = null;
+let timerInterval = null;
+
 // === Ajout de boutons dynamiques ===
 const dynamicButtons = document.querySelector('#dynamic-buttons');
 
@@ -110,3 +113,29 @@ export const populateGraphSelect = async () => {
         });
     }
 };
+
+export const startTimer = () => {
+    const timerDisplay = document.querySelector('#timer-display');
+    const timerElement = document.querySelector('#timer');
+    
+    startTime = Date.now();
+    timerDisplay.style.display = 'block';
+    
+    timerInterval = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const minutes = Math.floor(elapsedTime / 60000);
+        const seconds = Math.floor((elapsedTime % 60000) / 1000);
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+export const stopTimer = () => {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    const elapsedTime = Date.now() - startTime;
+    const minutes = Math.floor(elapsedTime / 60000);
+    const seconds = Math.floor((elapsedTime % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}

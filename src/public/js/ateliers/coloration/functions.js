@@ -1,4 +1,5 @@
 import { colors } from "../../constants.js";
+import { stopTimer } from "../../functions.js";
 
 let cy;
 
@@ -31,8 +32,7 @@ export const rgbToHex = (rgb) => {
     return `#${result.join('')}`;
 }
 
-export const validateGraph = (cyInstance, difficulty) => {
-
+export const validateGraph = (cy, difficulty) => {
     const defaultColor = '#cccccc';
     let isCompleted = true;
     let isValid = true;
@@ -74,10 +74,11 @@ export const validateGraph = (cyInstance, difficulty) => {
             text: "Deux sommets adjacents ont la même couleur.",
         });
     } else {
+        const timeElapsed = stopTimer();
         Swal.fire({
             icon: "success",
             title: "Félicitations !",
-            text: "Bravo ! La coloration est valide.",
+            text: `Bravo ! La coloration est valide en ${timeElapsed}.`,
         });
     }
 };

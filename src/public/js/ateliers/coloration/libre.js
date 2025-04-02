@@ -1,5 +1,6 @@
 import { initGraph, loadPredefinedGraph, resetColorsLibre, rgbToHex } from './functions.js';
-import { addDynamicButton, populateGraphSelect } from '../../functions.js';
+import { addDynamicButton, populateGraphSelect, startTimer, stopTimer } from '../../functions.js';
+import { colors } from '../../constants.js';
 
 export const initLibreMode = () => {
     const cyLibre = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
@@ -35,13 +36,27 @@ export const initLibreMode = () => {
 
             setTimeout(() => {
 
-                addInfiniteColorTokens(Object.keys(graphData.pastilleCounts), cyLibre);
+                const existingColors = Object.keys(graphData.pastilleCounts);
+
+                const availableColors = colors.filter(c => !existingColors.includes(c));
+
+                const numRandomColors = Math.min(Math.floor(Math.random() * 3) + 1, availableColors.length);
+
+                const shuffled = availableColors.sort(() => 0.5 - Math.random());
+
+                const randomColors = shuffled.slice(0, numRandomColors);
+
+                const finalColors = existingColors.concat(randomColors);
+
+                addInfiniteColorTokens(finalColors, cyLibre);
 
                 cyLibre.nodes().forEach((node) => {
                     if (!node.data('isColorNode')) {
                         node.lock();
                     }
                 });
+
+                startTimer();
             }, 100);
         } catch (error) {
             Swal.fire({
@@ -63,11 +78,8 @@ export const initLibreMode = () => {
         }
 
         pastilleCounts.forEach((color) => {
-
-            for (let i = 0; i < 1; i++) {
-                createColorToken(color, currentXPosition, 50, cy);
-                currentXPosition += 50;
-            }
+            createColorToken(color, currentXPosition, 50, cy);
+            currentXPosition += 50;
         });
 
         cy.layout({ name: 'preset' }).run();
@@ -205,17 +217,18 @@ function validateGraphLibre(cy, optimalColorCount) {
             text: "Deux sommets adjacents ont la même couleur.",
         });
     } else {
+        const timeElapsed = stopTimer();
         if (usedColors.size > optimalColorCount) {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide. Êtes-vous sûr de ne pas pouvoir utiliser moins de couleurs ?",
+                text: `Bravo, la coloration est valide en ${timeElapsed}. Êtes-vous sûr de ne pas pouvoir utiliser moins de couleurs ?`,
             });
         } else {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide. Vous avez utilisé le minimum de couleurs possible.",
+                text: `Bravo, la coloration est valide en ${timeElapsed}. Vous avez utilisé le minimum de couleurs possible.`,
             });
         }
     }
