@@ -40,7 +40,7 @@ export const loadPredefinedGraph = async (graphId) => {
         }
 
         const graphConfig = await response.json();
-        console.log(graphConfig);
+
         if (graphConfig?.data) {
 
             graphConfig.data.nodes.forEach(node => {

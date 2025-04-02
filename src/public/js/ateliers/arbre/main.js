@@ -64,7 +64,6 @@ function validateSpanningTree(cy) {
     const visited = new Set();
     const adj = {};
 
-    // build adjacency list
     selectedEdges.forEach(edge => {
         const source = edge.source().id();
         const target = edge.target().id();
@@ -80,12 +79,11 @@ function validateSpanningTree(cy) {
         Swal.fire({
             icon: 'error',
             title: 'Incorrect',
-            text: 'Un arbre couvrant doit contenir exactement n-1 arêtes.',
+            text: 'Un arbre couvrant..',
         });
         return;
     }
 
-    // DFS to check connectivity
     function dfs(nodeId) {
         if (visited.has(nodeId)) return;
         visited.add(nodeId);
@@ -111,7 +109,10 @@ function validateSpanningTree(cy) {
 }
 
 function showPrimSolution(cy) {
+
     const result = primAlgorithm(cy);
+
+    console.log(result);
 
     if (!result) {
         Swal.fire({

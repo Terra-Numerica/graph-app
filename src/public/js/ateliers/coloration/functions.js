@@ -8,8 +8,8 @@ export const initGraph = (containerId, options = {}) => {
         elements: [],
         style: [
             { selector: 'node', style: { 'background-color': '#cccccc' } },
-            { 
-                selector: 'edge', 
+            {
+                selector: 'edge',
                 style: {
                     'line-color': '#666',
                     'width': 2,
@@ -79,12 +79,12 @@ export const validateGraph = (cyInstance, difficulty) => {
             title: "Félicitations !",
             text: "Bravo ! La coloration est valide.",
         });
-    }    
+    }
 };
 
 export const loadPredefinedGraph = async (graphId) => {
     cy.elements().remove();
-    
+
     try {
         const response = await fetch(`/api/graph/${graphId}`);
         if (!response.ok) {
@@ -92,7 +92,7 @@ export const loadPredefinedGraph = async (graphId) => {
         }
 
         const graphConfig = await response.json();
-        console.log(graphConfig);
+
         if (graphConfig?.data) {
 
             graphConfig.data.nodes.forEach(node => {

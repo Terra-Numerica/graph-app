@@ -1,4 +1,4 @@
-export function primAlgorithm(cy) {
+export const primAlgorithm = (cy) => {
     const nodes = cy.nodes();
     if (nodes.length === 0) return [];
 
@@ -6,11 +6,9 @@ export function primAlgorithm(cy) {
     const edgeQueue = [];
     const resultEdgeIds = [];
 
-    // Démarrer avec le premier sommet
     const startNode = nodes[0];
     visited.add(startNode.id());
 
-    // Ajouter toutes ses arêtes au "tas"
     startNode.connectedEdges().forEach(edge => {
         if (edge.data('weight') !== undefined) {
             edgeQueue.push(edge);
@@ -18,7 +16,7 @@ export function primAlgorithm(cy) {
     });
 
     while (visited.size < nodes.length && edgeQueue.length > 0) {
-        // Trier par poids croissant
+
         edgeQueue.sort((a, b) => a.data('weight') - b.data('weight'));
 
         const minEdge = edgeQueue.shift();
@@ -51,7 +49,7 @@ export function primAlgorithm(cy) {
     }
 
     if (visited.size !== nodes.length) {
-        return null; // Graphe non connexe
+        return null;
     }
 
     return resultEdgeIds;

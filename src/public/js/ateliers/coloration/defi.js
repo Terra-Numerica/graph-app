@@ -87,7 +87,7 @@ export const initDefiMode = () => {
                     <hr>
                     <p>
                         <strong>Justification :</strong><br>
-                        Imagine que chaque sommet du graphe est une <strong>antenne de télécommunication</strong>, 
+                        Imaginez que chaque sommet du graphe est une <strong>antenne de télécommunication</strong>, 
                         et que chaque arête représente une <strong>connexion</strong> entre elles.
                     </p>
                     <p>
@@ -110,7 +110,7 @@ export const initDefiMode = () => {
             Swal.fire({
                 icon: 'error',
                 title: "Non, ce graphe n'est pas impossible.",
-                text: "Ce graphe peut être colorié correctement. Essayez encore !",
+                text: "Ce graphe peut être coloré correctement. Essayez encore !",
             });
         }
     });

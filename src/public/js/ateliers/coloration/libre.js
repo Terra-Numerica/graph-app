@@ -44,7 +44,7 @@ export const initLibreMode = () => {
                 });
             }, 100);
         } catch (error) {
-            Swall.fire({
+            Swal.fire({
                 icon: 'error',
                 title: 'Erreur',
                 text: "Impossible de charger le graphe. Veuillez réessayer.",
@@ -205,18 +205,17 @@ function validateGraphLibre(cy, optimalColorCount) {
             text: "Deux sommets adjacents ont la même couleur.",
         });
     } else {
-
         if (usedColors.size > optimalColorCount) {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide, êtes-vous sûr que vous ne pouvez pas utiliser moins de couleurs ?",
+                text: "Bravo, la coloration est valide. Êtes-vous sûr de ne pas pouvoir utiliser moins de couleurs ?",
             });
         } else {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide, vous avez utilisé le moins de couleurs possible.",
+                text: "Bravo, la coloration est valide. Vous avez utilisé le minimum de couleurs possible.",
             });
         }
     }
