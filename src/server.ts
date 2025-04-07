@@ -15,6 +15,7 @@ import type { Request, Response } from "express";
 // Routes
 import graphRoute from "@/routes/graph.route";
 import adminRoute from "@/routes/admin.route";
+import meliMeloRoute from "@/routes/meli-melo.route";
 
 try {
 
@@ -43,6 +44,7 @@ try {
 
 	// Use Routes
 	app.use("/api/graph", graphRoute);
+	app.use("/api/meli-melo", meliMeloRoute);
 	app.use("/admin", adminRoute);
 
 	app.get('/', (req: Request, res: Response) => res.sendFile(resolve('./src/public/index.html')));
