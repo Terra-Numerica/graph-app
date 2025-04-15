@@ -235,3 +235,8 @@ h1 {
 #info-section button:hover {
 	background-color: #a71d2a;
 }
+
+/* Styles for Prim's Algorithm Visualization */
+.considering {
+    transition: all 0.3s ease;
+}

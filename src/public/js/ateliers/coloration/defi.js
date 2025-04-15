@@ -30,6 +30,8 @@ export const initDefiMode = () => {
                 return;
             }
 
+            startTimer();
+
             setTimeout(async () => {
                 difficulty = graphData.difficulty;
 
@@ -40,8 +42,6 @@ export const initDefiMode = () => {
                         node.lock();
                     }
                 });
-
-                startTimer();
             }, 100);
         } catch (error) {
             console.error("Erreur lors du chargement du graphe :", error.message);

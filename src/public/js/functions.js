@@ -117,6 +117,8 @@ export const populateGraphSelect = async () => {
 export const startTimer = () => {
     const timerDisplay = document.querySelector('#timer-display');
     const timerElement = document.querySelector('#timer');
+
+    timerElement.textContent = '00:00';
     
     startTime = Date.now();
     timerDisplay.style.display = 'block';
@@ -130,6 +132,10 @@ export const startTimer = () => {
 }
 
 export const stopTimer = () => {
+    const timerDisplay = document.querySelector('#timer-display');
+
+    timerDisplay.style.display = 'none';
+
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;

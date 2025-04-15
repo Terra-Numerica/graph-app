@@ -4,6 +4,11 @@ import { stopTimer } from "../../functions.js";
 let cy;
 
 export const initGraph = (containerId, options = {}) => {
+
+    if (cy !== undefined) cy = undefined;
+
+    console.log(cy);
+
     cy = cytoscape({
         container: document.getElementById(containerId),
         elements: [],

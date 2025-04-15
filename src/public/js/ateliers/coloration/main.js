@@ -1,8 +1,8 @@
 import { initDefiMode } from './defi.js';
 import { initLibreMode } from './libre.js';
 import { initCreationMode } from './creation.js';
-import { clearDynamicButtons } from '../../functions.js';
 import { MODE_INFO_TEXTS, DOM_ELEMENTS } from './constants.js';
+import { clearDynamicButtons, stopTimer } from '../../functions.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const graphSection = document.querySelector('#graph-section');
@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		colorConfigInput.style.display = 'none';
 		initDefiMode();
 		displayModeInfo('Défi');
+
+		stopTimer();
 	});
 
 	DOM_ELEMENTS.modeLibreBtn.addEventListener('click', () => {
@@ -64,6 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		colorConfigInput.style.display = 'none';
 		initLibreMode();
 		displayModeInfo('Libre');
+
+		stopTimer();
 	});
 
 	DOM_ELEMENTS.modeCreationBtn.addEventListener('click', () => {
@@ -74,5 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		colorConfigInput.style.display = 'block';
 		initCreationMode();
 		displayModeInfo('Création');
+
+		stopTimer();
 	});
 });

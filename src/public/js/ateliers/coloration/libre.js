@@ -34,6 +34,8 @@ export const initLibreMode = () => {
             optimalColorCount = graphData.optimalColoring;
             difficulty = graphData.difficulty;
 
+            startTimer();
+
             setTimeout(() => {
 
                 const existingColors = Object.keys(graphData.pastilleCounts);
@@ -55,8 +57,6 @@ export const initLibreMode = () => {
                         node.lock();
                     }
                 });
-
-                startTimer();
             }, 100);
         } catch (error) {
             Swal.fire({
@@ -71,6 +71,9 @@ export const initLibreMode = () => {
     addDynamicButton('Réinitialiser la Coloration', 'reset-colors-btn', resetColorsLibre);
 
     function addInfiniteColorTokens(pastilleCounts, cy) {
+
+        console.log(pastilleCounts)
+
         let currentXPosition = 50;
 
         if (difficulty.trim().toLowerCase() === "impossible") {
@@ -222,13 +225,13 @@ function validateGraphLibre(cy, optimalColorCount) {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: `Bravo, la coloration est valide en ${timeElapsed}. Êtes-vous sûr de ne pas pouvoir utiliser moins de couleurs ?`,
+                text: `Vous avez réussi à colorier le graphe en ${timeElapsed} ! Il existe une solution qui utilise moins de couleurs. Allez-vous réussir à la trouver ?`,
             });
         } else {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: `Bravo, la coloration est valide en ${timeElapsed}. Vous avez utilisé le minimum de couleurs possible.`,
+                text: `Vous avez réussi à colorier le graphe en ${timeElapsed} ! Vous avez trouvé la solution qui utilise le nombre minimum de couleurs !`,
             });
         }
     }
