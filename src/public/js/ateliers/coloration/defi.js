@@ -10,6 +10,7 @@ export const initDefiMode = () => {
     const snapDistance = 50;
     const defaultColor = '#cccccc';
     let difficulty = "";
+    let graphName = "";
 
     populateGraphSelect();
 
@@ -33,7 +34,9 @@ export const initDefiMode = () => {
             startTimer();
 
             setTimeout(async () => {
+
                 difficulty = graphData.difficulty;
+                graphName = graphData.name;
 
                 addDynamicColorTokens(graphData.pastilleCounts, cyDefi);
 
@@ -56,51 +59,62 @@ export const initDefiMode = () => {
     addDynamicButton('Valider la Coloration', 'validate-graph-btn', () => validateGraph(cyDefi, difficulty));
     addDynamicButton('Réinitialiser la Coloration', 'reset-colors-btn', resetColorsDefi);
 
-    function hasColoredNodes(cy) {
-        return cy.nodes().some(node => {
-            return !node.data('isColorNode') && rgbToHex(node.style('background-color')) !== '#cccccc';
-        });
-    }
-
     addDynamicButton("Je pense qu'il est impossible", 'impossible-btn', () => {
-        const hasTriedColoring = hasColoredNodes(cyDefi);
+        const totalNodes = cyDefi.nodes().filter(node => !node.data('isColorNode')).length;
+        const coloredNodes = cyDefi.nodes().filter(node => {
+            return !node.data('isColorNode') && rgbToHex(node.style('background-color')) !== '#cccccc';
+        }).length;
 
-        if (!hasTriedColoring || timeElapsed < 10) {
+        const percentage = (coloredNodes / totalNodes) * 100;
+
+        if (percentage < 15) {
             Swal.fire({
                 icon: 'warning',
                 title: "Attention !",
-                text: "Vous devez essayer de colorer le graphe avant de déclarer qu'il est impossible !",
+                text: "Vous devez essayer de colorer au moins 15% du graphe avant de déclarer qu'il est impossible !",
             });
             return;
         }
 
-        if (difficulty.trim().toLowerCase() === "impossible") {
-            const timeElapsed = stopTimer();
+        if (difficulty.trim().toLowerCase() === "impossible-preuve-facile" || difficulty.trim().toLowerCase() === "impossible-preuve-difficile") {
+
+            const gameNumber = parseInt(graphName.split(' ')[1]);
+            let explanation = "";
+
+            stopTimer();
+
+            switch (gameNumber) {
+                case 12:
+                    explanation = "Pour ce graphe, nous avons deux couleurs à disposition (rouge et bleu). Mais, on ne peut pas colorer ce graphe avec deux couleurs. En effet, ce graphe possède deux cycles impairs (i.e. avec un nombre impair de sommets) : celui formé par les sommets en vert clair, et celui formé par les sommets en jaune dans la figure ci-contre. En effet, sur un cycle impair, il est impossible de faire alterner deux couleurs.";
+                    break;
+                case 13:
+                    explanation = "Observons que les trois sommets d'un triangle doivent être de couleurs différentes. Ainsi chacune des trois couleurs apparaît sur chaque triangle. Supposons que ce soit possible de colorer avec les jetons fournis. abc, efh et ihk sont des triangles. Comme on ne dispose que de deux jetons jaunes, l'un d'entre eux doit forcément être sur h, le seul sommet qui soit dans deux de ces triangles. De même, abc et bcf sont des triangles, donc le deuxième jeton jaune doit être sur b, le sommet commun à ces deux triangles. Une fois placés les deux jetons jaunes, il ne reste que deux couleurs. On peut bien colorer le graphe restant avec deux couleurs. Cependant une telle coloration est fixée à permutation des couleurs près. En effet, une fois que la couleur d'un sommet est fixée, celle de ses voisins doit être différente, celles des voisins de ses voisins la même et ainsi de suite. Ainsi une coloration en deux couleurs de ce graphe a forcément 5 sommets d'une couleur (ceux en gris dans la figure ci-dessus) et 8 de l'autre (ceux en blanc). Or ici nous disposons de 6 jetons rouges et 7 jetons bleus.";
+                    break;
+                case 16:
+                    explanation = "Pour ce graphe, nous avons un seul jeton de couleur jaune. Celui-ci doit forcément être au sommet central qui est relié à tous les autres. Il reste ensuite les deux couleurs, rouge et bleu, pour colorer le cycle externe. Mais, cela est impossible car ce cycle est impair (il a 9 sommets), et qu'on ne peut donc pas faire alterner deux couleurs sur ce cycle.";
+                    break;
+                case 22:
+                    explanation = "Ce graphe possède 4 triangles disjoints représentés en vert sur la figure ci-contre. Comme on ne dispose que de trois couleurs de jetons, chacun de ces triangles doit avoir un sommet de chaque couleur. Il faudrait donc au moins quatre jetons de chaque couleur pour avoir une solution, mais nous ne disposons que de trois jetons bleus.";
+                    break;
+                case 25:
+                    explanation = "Dans ce problème, nous disposons de 6 jetons rouges. Il faut pouvoir placer ces jetons sur un ensemble indépendant du graphe, c'est-à-dire un ensemble dont aucune paire n'est reliée par une arête. Montrons que ceci est impossible. On peut tout d'abord facilement voir qu'aucun des deux sommets en gris sur la figure ci-contre ne peut être dans un tel ensemble indépendant car ils ont trop de voisins. Les sommets non-gris forment un enchaînement de dix sommets sur lesquels il est impossible de mettre 6 jetons rouges. En effet, deux sommets consécutifs ne peuvent pas être rouge, donc on peut placer les jetons rouges au mieux un sommet sur deux, soit 5 fois.";
+                    break;
+                case 38:
+                    explanation = "Pour ce graphe, nous avons deux couleurs à disposition (rouge et bleu). On peut bien colorer ce graphe avec deux couleurs (voir la solution au problème 37). Cependant une telle coloration est fixée à permutation des couleurs près. En effet, une fois que la couleur d'un sommet est fixée, celle de ses voisins doit être différente, celles des voisins de ses voisins la même et ainsi de suite. Ainsi une coloration en deux couleurs de ce graphe a forcément 6 sommets d'une couleur et 4 de l'autre. Or ici nous disposons de 5 jetons de chaque couleur.";
+                    break;
+                case 39:
+                    explanation = "Pour ce graphe, nous avons deux couleurs à disposition (rouge et bleu). Mais, on ne peut pas colorer ce graphe avec deux couleurs. En effet, ce graphe possède des cycles impairs (i.e. avec un nombre impair de sommets). Par exemple, celui formé par les sommets en vert clair dans la figure ci-contre. En effet, sur un cycle impair, il est impossible de faire alterner deux couleurs.";
+                    break;
+                default:
+                    explanation = difficulty === "Impossible-preuve-facile"
+                        ? "En essayant le graphe, vous venez de comprendre pourquoi il est dans la catégorie moyenne."
+                        : "En essayant le graphe, vous venez de comprendre pourquoi il est dans la catégorie extrême.";
+            }
+
             Swal.fire({
                 icon: 'success',
                 title: 'Bonne analyse !',
-                html: `
-                    <p>✅ Ce graphe est effectivement impossible à colorer en ${timeElapsed}.</p>
-                    <hr>
-                    <p>
-                        <strong>Justification :</strong><br>
-                        Imaginez que chaque sommet du graphe est une <strong>antenne de télécommunication</strong>, 
-                        et que chaque arête représente une <strong>connexion</strong> entre elles.
-                    </p>
-                    <p>
-                        <strong>📡 Règle importante :</strong><br>
-                        Deux antennes reliées <strong>ne peuvent pas utiliser la même fréquence</strong> 
-                        pour éviter les interférences.
-                    </p>
-                    <p>
-                        ❌ Mais ici, il y a <strong>trop de connexions</strong> et <strong>pas assez de fréquences (couleurs)</strong>. 
-                        Cela signifie qu'à un moment, une antenne devra utiliser une fréquence 
-                        <strong>déjà prise par une voisine</strong>, ce qui cause une interférence et rend le réseau inutilisable.
-                    </p>
-                    <p>
-                        🛑 <strong>C'est pour ça que ce graphe est impossible à colorer.</strong>
-                    </p>
-                `,
+                text: explanation
             });
 
         } else {
@@ -108,6 +122,139 @@ export const initDefiMode = () => {
                 icon: 'error',
                 title: "Non, ce graphe n'est pas impossible.",
                 text: "Ce graphe peut être coloré correctement. Essayez encore !",
+            });
+        }
+    });
+
+    const impossibleBtn = document.querySelector('#impossible-btn');
+    impossibleBtn.disabled = true;
+    impossibleBtn.style.cursor = 'not-allowed';
+    impossibleBtn.style.opacity = '0.6';
+
+    function checkColoredPercentage() {
+        const totalNodes = cyDefi.nodes().filter(node => !node.data('isColorNode')).length;
+        const coloredNodes = cyDefi.nodes().filter(node => {
+            return !node.data('isColorNode') && rgbToHex(node.style('background-color')) !== '#cccccc';
+        }).length;
+
+        const percentage = (coloredNodes / totalNodes) * 100;
+
+        if (percentage >= 15) {
+            impossibleBtn.disabled = false;
+            impossibleBtn.style.cursor = 'pointer';
+            impossibleBtn.style.opacity = '1';
+        } else {
+            impossibleBtn.disabled = true;
+            impossibleBtn.style.cursor = 'not-allowed';
+            impossibleBtn.style.opacity = '0.6';
+        }
+    }
+
+    cyDefi.on('tap', 'node', (evt) => {
+        const node = evt.target;
+        const currentColor = rgbToHex(node.style('background-color'));
+
+        if (!node.data('isColorNode') && selectedColorNode) {
+            const selectedColor = selectedColorNode.style('background-color');
+
+            if (currentColor === defaultColor) {
+                node.style('background-color', selectedColor);
+                cyDefi.remove(selectedColorNode);
+                selectedColorNode = null;
+                checkColoredPercentage();
+            }
+        }
+    });
+
+    cyDefi.on('grab', 'node', (evt) => {
+        const node = evt.target;
+
+        if (node.data('isColorNode')) {
+            draggedColor = node.style('background-color');
+            node.data('initialPosition', { x: node.position('x'), y: node.position('y') });
+        }
+    });
+
+    cyDefi.on('mousemove', (evt) => {
+        if (draggedColor) {
+            let closest = null;
+            let minDistance = Infinity;
+
+            cyDefi.nodes().forEach((node) => {
+                if (!node.data('isColorNode')) {
+                    const distance = Math.sqrt(
+                        Math.pow(node.position('x') - evt.position.x, 2) +
+                        Math.pow(node.position('y') - evt.position.y, 2)
+                    );
+
+                    if (distance < minDistance && distance < snapDistance) {
+                        minDistance = distance;
+                        closest = node;
+                    }
+                }
+            });
+
+            if (closest) {
+                closestNode = closest;
+                closestNode.style('border-color', '#FFD700');
+            } else if (closestNode) {
+                closestNode.style('border-color', '#666');
+                closestNode = null;
+            }
+        }
+    });
+
+    cyDefi.on('free', 'node', (evt) => {
+        const colorNode = evt.target;
+
+        if (closestNode && draggedColor) {
+            const currentColor = rgbToHex(closestNode.style('background-color'));
+
+            if (currentColor !== defaultColor) {
+                const initialPosition = colorNode.data('initialPosition');
+                if (initialPosition) colorNode.position(initialPosition);
+            } else {
+                closestNode.style('background-color', draggedColor);
+                closestNode.style('border-color', '#666');
+                cyDefi.remove(colorNode);
+                checkColoredPercentage();
+            }
+        } else {
+            const initialPosition = colorNode.data('initialPosition');
+            if (initialPosition) colorNode.position(initialPosition);
+        }
+
+        draggedColor = null;
+        closestNode = null;
+    });
+
+    cyDefi.on('cxttap', 'node', (evt) => {
+        const node = evt.target;
+        const currentColor = rgbToHex(node.style('background-color'));
+        const isColorNode = node.data('isColorNode');
+
+        if (currentColor === defaultColor || isColorNode) return;
+
+        node.style('background-color', defaultColor);
+        checkColoredPercentage();
+
+        const x = findFreePositionX(cyDefi);
+
+        if (x !== null) {
+            cyDefi.add({
+                group: 'nodes',
+                data: { id: `color-${currentColor}-${Math.random()}`, isColorNode: true },
+                position: { x, y: 50 },
+                style: {
+                    'background-color': currentColor,
+                    'width': 30,
+                    'height': 30,
+                    'label': '',
+                    'border-width': 2,
+                    'border-color': '#000',
+                    'shape': 'ellipse',
+                },
+                locked: false,
             });
         }
     });
@@ -178,113 +325,4 @@ export const initDefiMode = () => {
         console.error("No free position found on X-axis within the limit.");
         return null;
     }
-
-    cyDefi.on('tap', 'node', (evt) => {
-        const node = evt.target;
-        const currentColor = rgbToHex(node.style('background-color'));
-
-        if (!node.data('isColorNode') && selectedColorNode) {
-            const selectedColor = selectedColorNode.style('background-color');
-
-            if (currentColor === defaultColor) {
-                node.style('background-color', selectedColor);
-
-                cyDefi.remove(selectedColorNode);
-
-                selectedColorNode = null;
-            }
-        }
-    });
-
-    cyDefi.on('grab', 'node', (evt) => {
-        const node = evt.target;
-
-        if (node.data('isColorNode')) {
-            draggedColor = node.style('background-color');
-            node.data('initialPosition', { x: node.position('x'), y: node.position('y') });
-        }
-    });
-
-    cyDefi.on('mousemove', (evt) => {
-        if (draggedColor) {
-            let closest = null;
-            let minDistance = Infinity;
-
-            cyDefi.nodes().forEach((node) => {
-                if (!node.data('isColorNode')) {
-                    const distance = Math.sqrt(
-                        Math.pow(node.position('x') - evt.position.x, 2) +
-                        Math.pow(node.position('y') - evt.position.y, 2)
-                    );
-
-                    if (distance < minDistance && distance < snapDistance) {
-                        minDistance = distance;
-                        closest = node;
-                    }
-                }
-            });
-
-            if (closest) {
-                closestNode = closest;
-                closestNode.style('border-color', '#FFD700');
-            } else if (closestNode) {
-                closestNode.style('border-color', '#666');
-                closestNode = null;
-            }
-        }
-    });
-
-    cyDefi.on('free', 'node', (evt) => {
-        const colorNode = evt.target;
-
-        if (closestNode && draggedColor) {
-            const currentColor = rgbToHex(closestNode.style('background-color'));
-
-            if (currentColor !== defaultColor) {
-                const initialPosition = colorNode.data('initialPosition');
-                if (initialPosition) colorNode.position(initialPosition);
-
-            } else {
-                closestNode.style('background-color', draggedColor);
-                closestNode.style('border-color', '#666');
-                cyDefi.remove(colorNode);
-            }
-        } else {
-            const initialPosition = colorNode.data('initialPosition');
-            if (initialPosition) colorNode.position(initialPosition);
-        }
-
-        draggedColor = null;
-        closestNode = null;
-    });
-
-    cyDefi.on('cxttap', 'node', (evt) => {
-        const node = evt.target;
-        const currentColor = rgbToHex(node.style('background-color'));
-        const isColorNode = node.data('isColorNode');
-
-        if (currentColor === defaultColor || isColorNode) return;
-
-        node.style('background-color', defaultColor);
-
-        const x = findFreePositionX(cyDefi);
-
-        if (x !== null) {
-            cyDefi.add({
-                group: 'nodes',
-                data: { id: `color-${currentColor}-${Math.random()}`, isColorNode: true },
-                position: { x, y: 50 },
-                style: {
-                    'background-color': currentColor,
-                    'width': 30,
-                    'height': 30,
-                    'label': '',
-                    'border-width': 2,
-                    'border-color': '#000',
-                    'shape': 'ellipse',
-                },
-                locked: false,
-            });
-        }
-    });
 };

@@ -72,11 +72,9 @@ export const initLibreMode = () => {
 
     function addInfiniteColorTokens(pastilleCounts, cy) {
 
-        console.log(pastilleCounts)
-
         let currentXPosition = 50;
 
-        if (difficulty.trim().toLowerCase() === "impossible") {
+        if (difficulty.trim().toLowerCase() === "impossible-preuve-difficile") {
             pastilleCounts.push("#90435F");
         }
 

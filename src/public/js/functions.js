@@ -72,19 +72,20 @@ export const populateGraphSelect = async () => {
         const graphs = await response.json();
 
         const groupedGraphs = {
+            'Très facile': [],
             'Facile': [],
             'Moyen': [],
             'Difficile': [],
-            'Impossible': []
+            'Extrême': []
         };
 
         graphs.forEach(graph => {
             if (groupedGraphs[graph.difficulty]) {
-                if(graph.difficulty === "Impossible") {
-                    groupedGraphs["Difficile"].push(graph);
-                } else {
-                    groupedGraphs[graph.difficulty].push(graph);
-                };
+                groupedGraphs[graph.difficulty].push(graph);
+            } else if (graph.difficulty === 'Impossible-preuve-facile') {
+                groupedGraphs['Moyen'].push(graph);
+            } else if (graph.difficulty === 'Impossible-preuve-difficile') {
+                groupedGraphs['Extrême'].push(graph);
             }
         });
 

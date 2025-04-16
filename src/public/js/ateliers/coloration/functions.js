@@ -7,8 +7,6 @@ export const initGraph = (containerId, options = {}) => {
 
     if (cy !== undefined) cy = undefined;
 
-    console.log(cy);
-
     cy = cytoscape({
         container: document.getElementById(containerId),
         elements: [],
@@ -66,12 +64,6 @@ export const validateGraph = (cy, difficulty) => {
             title: "Attention !",
             text: "Le graphe n'est pas entièrement coloré.",
         });
-    } else if (difficulty === "Impossible") {
-        Swal.fire({
-            icon: "error",
-            title: "Erreur !",
-            text: "En essayant le graphe, vous venez de comprendre pourquoi il est dans la catégorie impossible.",
-        });
     } else if (!isValid) {
         Swal.fire({
             icon: "error",
@@ -112,6 +104,7 @@ export const loadPredefinedGraph = async (graphId) => {
             cy.add(graphConfig.data);
 
             return {
+                name: graphConfig.name,
                 data: graphConfig.data,
                 optimalColoring: graphConfig.optimalColoring || null,
                 pastilleCounts: graphConfig.pastilleCounts || null,
