@@ -203,7 +203,7 @@ export const resetColorsDefi = () => {
         for (let i = 0; i < count; i++) {
             cy.add({
                 group: 'nodes',
-                data: { id: `color-${color}-${i}`, isColorNode: true },
+                data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
                 position: { x: currentXPosition, y: 50 },
                 style: {
                     'background-color': color,

@@ -46,12 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	};
 
+	const cyContainer = document.querySelector('#cy-predefined');
+
 	DOM_ELEMENTS.modeDefiBtn.addEventListener('click', () => {
 		graphSection.style.display = 'block';
 		modeTitle.textContent = 'Mode Défi';
 		clearDynamicButtons();
 		selectElement.style.display = 'block';
 		colorConfigInput.style.display = 'none';
+
+		cyContainer.innerHTML = '';
+
 		initDefiMode();
 		displayModeInfo('Défi');
 
@@ -64,6 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		clearDynamicButtons();
 		selectElement.style.display = 'block';
 		colorConfigInput.style.display = 'none';
+
+		cyContainer.innerHTML = '';
+
 		initLibreMode();
 		displayModeInfo('Libre');
 
@@ -76,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		clearDynamicButtons();
 		selectElement.style.display = 'none';
 		colorConfigInput.style.display = 'block';
+
+		cyContainer.innerHTML = '';
+
 		initCreationMode();
 		displayModeInfo('Création');
 

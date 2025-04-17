@@ -4,6 +4,8 @@ import { addDynamicButton, populateGraphSelect, startTimer, stopTimer } from '..
 export const initDefiMode = () => {
     const cyDefi = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
 
+    cyDefi.resize();
+
     let draggedColor = null;
     let selectedColorNode = null;
     let closestNode = null;
@@ -243,7 +245,7 @@ export const initDefiMode = () => {
         if (x !== null) {
             cyDefi.add({
                 group: 'nodes',
-                data: { id: `color-${currentColor}-${Math.random()}`, isColorNode: true },
+                data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
                 position: { x, y: 50 },
                 style: {
                     'background-color': currentColor,
@@ -275,7 +277,7 @@ export const initDefiMode = () => {
             for (let i = 0; i < count; i++) {
                 cy.add({
                     group: 'nodes',
-                    data: { id: `color-${color}-${i}`, isColorNode: true },
+                    data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
                     position: { x: currentXPosition, y: 50 },
                     style: {
                         'background-color': color,
@@ -301,7 +303,7 @@ export const initDefiMode = () => {
             selectedColorNode.style('border-color', '#FFD700');
         });
 
-        cy.layout({ name: 'preset' }).run();
+        //cy.layout({ name: 'preset' }).run();
     }
 
     function findFreePositionX(cy) {

@@ -5,6 +5,8 @@ import { colors } from '../../constants.js';
 export const initLibreMode = () => {
     const cyLibre = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
 
+    cyLibre.resize();
+
     let draggedColor = null;
     let closestNode = null;
     const snapDistance = 50;
@@ -49,14 +51,14 @@ export const initLibreMode = () => {
                 const randomColors = shuffled.slice(0, numRandomColors);
 
                 const finalColors = existingColors.concat(randomColors);
-
-                addInfiniteColorTokens(finalColors, cyLibre);
-
+                
                 cyLibre.nodes().forEach((node) => {
                     if (!node.data('isColorNode')) {
                         node.lock();
                     }
                 });
+
+                addInfiniteColorTokens(finalColors, cyLibre);
             }, 100);
         } catch (error) {
             Swal.fire({
@@ -72,25 +74,23 @@ export const initLibreMode = () => {
 
     function addInfiniteColorTokens(pastilleCounts, cy) {
 
-        let currentXPosition = 50;
+        console.log(pastilleCounts);
 
-        if (difficulty.trim().toLowerCase() === "impossible-preuve-difficile") {
-            pastilleCounts.push("#90435F");
-        }
+        let currentXPosition = 50;
 
         pastilleCounts.forEach((color) => {
             createColorToken(color, currentXPosition, 50, cy);
             currentXPosition += 50;
         });
 
-        cy.layout({ name: 'preset' }).run();
+        //setTimeout(() => cy.layout({ name: 'preset' }).run(), 0);
     };
 
     function createColorToken(color, x, y, cy) {
 
         const token = cy.add({
             group: 'nodes',
-            data: { id: `color-${color}-${Math.random()}`, isColorNode: true },
+            data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
             position: { x, y },
             style: {
                 'background-color': color,

@@ -7,6 +7,8 @@ const colorCountInput = document.getElementById('color-count');
 export const initCreationMode = () => {
 
     const cyCustom = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
+    cyCustom.resize();
+
     const defaultColor = '#cccccc';
 
     let firstNode = null;
@@ -246,7 +248,7 @@ export const initCreationMode = () => {
 const createColorToken = (color, x, y, cy) => {
     cy.add({
         group: 'nodes',
-        data: { id: `color-${color}-${Math.random()}`, isColorNode: true },
+        data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
         position: { x, y },
         style: {
             'background-color': color,
