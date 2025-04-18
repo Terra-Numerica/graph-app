@@ -22,6 +22,9 @@ export const initLibreMode = () => {
 
         try {
             const graphId = predefinedGraphSelect.value;
+
+            if (!graphId) return;
+
             const graphData = await loadPredefinedGraph(graphId);
 
             if (!graphData || !graphData.data) {
@@ -35,8 +38,6 @@ export const initLibreMode = () => {
 
             optimalColorCount = graphData.optimalColoring;
             difficulty = graphData.difficulty;
-
-            startTimer();
 
             setTimeout(() => {
 
@@ -59,6 +60,8 @@ export const initLibreMode = () => {
                 });
 
                 addInfiniteColorTokens(finalColors, cyLibre);
+
+                startTimer();
             }, 100);
         } catch (error) {
             Swal.fire({
@@ -223,13 +226,13 @@ function validateGraphLibre(cy, optimalColorCount) {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: `Vous avez réussi à colorier le graphe en ${timeElapsed} ! Il existe une solution qui utilise moins de couleurs. Allez-vous réussir à la trouver ?`,
+                text: `Vous avez réussi à colorer le graphe en ${timeElapsed} ! Il existe une solution qui utilise moins de couleurs. Allez-vous réussir à la trouver ?`,
             });
         } else {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: `Vous avez réussi à colorier le graphe en ${timeElapsed} ! Vous avez trouvé la solution qui utilise le nombre minimum de couleurs !`,
+                text: `Vous avez réussi à colorer le graphe en ${timeElapsed} ! Vous avez trouvé la solution qui utilise le nombre minimum de couleurs !`,
             });
         }
     }

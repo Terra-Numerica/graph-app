@@ -10,7 +10,7 @@ class CustomFooter extends HTMLElement {
 		template.innerHTML = `
 			<div class="footer">
 				<div class="footer-container">
-					<h1 class="title">Terra Numerica © 2024</h1>
+					<h1 class="title">Terra Numerica © ${new Date().getFullYear()}</h1>
 				</div>
 			</div>
 

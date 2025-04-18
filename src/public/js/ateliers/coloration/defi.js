@@ -20,8 +20,11 @@ export const initDefiMode = () => {
 
     predefinedGraphSelect.addEventListener('change', async () => {
 
+        const graphId = predefinedGraphSelect.value;
+
+        if (!graphId) return;
+
         try {
-            const graphId = predefinedGraphSelect.value;
             const graphData = await loadPredefinedGraph(graphId);
 
             if (!graphData || !graphData.data) {
@@ -32,8 +35,6 @@ export const initDefiMode = () => {
                 })
                 return;
             }
-
-            startTimer();
 
             setTimeout(async () => {
 
@@ -47,6 +48,8 @@ export const initDefiMode = () => {
                         node.lock();
                     }
                 });
+
+                startTimer();
             }, 100);
         } catch (error) {
             console.error("Erreur lors du chargement du graphe :", error.message);
@@ -245,7 +248,7 @@ export const initDefiMode = () => {
         if (x !== null) {
             cyDefi.add({
                 group: 'nodes',
-                data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
+                data: { id: `color-${currentColor}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
                 position: { x, y: 50 },
                 style: {
                     'background-color': currentColor,

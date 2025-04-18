@@ -57,10 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		cyContainer.innerHTML = '';
 
+		stopTimer();
 		initDefiMode();
 		displayModeInfo('Défi');
-
-		stopTimer();
 	});
 
 	DOM_ELEMENTS.modeLibreBtn.addEventListener('click', () => {
@@ -72,10 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		cyContainer.innerHTML = '';
 
+		stopTimer();
 		initLibreMode();
 		displayModeInfo('Libre');
-
-		stopTimer();
 	});
 
 	DOM_ELEMENTS.modeCreationBtn.addEventListener('click', () => {
@@ -87,9 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		cyContainer.innerHTML = '';
 
+		stopTimer();
 		initCreationMode();
 		displayModeInfo('Création');
-
-		stopTimer();
 	});
 });
