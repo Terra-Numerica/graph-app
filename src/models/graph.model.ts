@@ -10,7 +10,7 @@ const graphSchema = new Schema({
 	},
     difficulty: {
         type: String,
-        enum: ['Facile', 'Moyen', 'Difficile', 'Impossible'],
+        enum: ['Très facile', 'Facile', 'Moyen', 'Difficile', 'Impossible-preuve-facile', 'Impossible-preuve-difficile'],
         required: true
     },
 	optimalColoring: { type: Number, required: true },

@@ -1,8 +1,11 @@
 import { initGraph, loadPredefinedGraph, resetColorsLibre, rgbToHex } from './functions.js';
-import { addDynamicButton, populateGraphSelect } from '../../functions.js';
+import { addDynamicButton, populateGraphSelect, startTimer, stopTimer } from '../../functions.js';
+import { colors } from '../../constants.js';
 
 export const initLibreMode = () => {
     const cyLibre = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
+
+    cyLibre.resize();
 
     let draggedColor = null;
     let closestNode = null;
@@ -19,6 +22,9 @@ export const initLibreMode = () => {
 
         try {
             const graphId = predefinedGraphSelect.value;
+
+            if (!graphId) return;
+
             const graphData = await loadPredefinedGraph(graphId);
 
             if (!graphData || !graphData.data) {
@@ -35,16 +41,30 @@ export const initLibreMode = () => {
 
             setTimeout(() => {
 
-                addInfiniteColorTokens(Object.keys(graphData.pastilleCounts), cyLibre);
+                const existingColors = Object.keys(graphData.pastilleCounts);
 
+                const availableColors = colors.filter(c => !existingColors.includes(c));
+
+                const numRandomColors = Math.min(Math.floor(Math.random() * 3) + 1, availableColors.length);
+
+                const shuffled = availableColors.sort(() => 0.5 - Math.random());
+
+                const randomColors = shuffled.slice(0, numRandomColors);
+
+                const finalColors = existingColors.concat(randomColors);
+                
                 cyLibre.nodes().forEach((node) => {
                     if (!node.data('isColorNode')) {
                         node.lock();
                     }
                 });
+
+                addInfiniteColorTokens(finalColors, cyLibre);
+
+                startTimer();
             }, 100);
         } catch (error) {
-            Swall.fire({
+            Swal.fire({
                 icon: 'error',
                 title: 'Erreur',
                 text: "Impossible de charger le graphe. Veuillez réessayer.",
@@ -56,28 +76,24 @@ export const initLibreMode = () => {
     addDynamicButton('Réinitialiser la Coloration', 'reset-colors-btn', resetColorsLibre);
 
     function addInfiniteColorTokens(pastilleCounts, cy) {
+
+        console.log(pastilleCounts);
+
         let currentXPosition = 50;
 
-        if (difficulty.trim().toLowerCase() === "impossible") {
-            pastilleCounts.push("#90435F");
-        }
-
         pastilleCounts.forEach((color) => {
-
-            for (let i = 0; i < 1; i++) {
-                createColorToken(color, currentXPosition, 50, cy);
-                currentXPosition += 50;
-            }
+            createColorToken(color, currentXPosition, 50, cy);
+            currentXPosition += 50;
         });
 
-        cy.layout({ name: 'preset' }).run();
+        //setTimeout(() => cy.layout({ name: 'preset' }).run(), 0);
     };
 
     function createColorToken(color, x, y, cy) {
 
         const token = cy.add({
             group: 'nodes',
-            data: { id: `color-${color}-${Math.random()}`, isColorNode: true },
+            data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
             position: { x, y },
             style: {
                 'background-color': color,
@@ -205,18 +221,18 @@ function validateGraphLibre(cy, optimalColorCount) {
             text: "Deux sommets adjacents ont la même couleur.",
         });
     } else {
-
+        const timeElapsed = stopTimer();
         if (usedColors.size > optimalColorCount) {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide, êtes-vous sûr que vous ne pouvez pas utiliser moins de couleurs ?",
+                text: `Vous avez réussi à colorer le graphe en ${timeElapsed} ! Il existe une solution qui utilise moins de couleurs. Allez-vous réussir à la trouver ?`,
             });
         } else {
             Swal.fire({
                 icon: "success",
                 title: "Félicitations !",
-                text: "Bravo, la coloration est valide, vous avez utilisé le moins de couleurs possible.",
+                text: `Vous avez réussi à colorer le graphe en ${timeElapsed} ! Vous avez trouvé la solution qui utilise le nombre minimum de couleurs !`,
             });
         }
     }

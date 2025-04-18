@@ -1,15 +1,19 @@
 import { colors } from "../../constants.js";
+import { stopTimer } from "../../functions.js";
 
 let cy;
 
 export const initGraph = (containerId, options = {}) => {
+
+    if (cy !== undefined) cy = undefined;
+
     cy = cytoscape({
         container: document.getElementById(containerId),
         elements: [],
         style: [
             { selector: 'node', style: { 'background-color': '#cccccc' } },
-            { 
-                selector: 'edge', 
+            {
+                selector: 'edge',
                 style: {
                     'line-color': '#666',
                     'width': 2,
@@ -31,8 +35,7 @@ export const rgbToHex = (rgb) => {
     return `#${result.join('')}`;
 }
 
-export const validateGraph = (cyInstance, difficulty) => {
-
+export const validateGraph = (cy, difficulty) => {
     const defaultColor = '#cccccc';
     let isCompleted = true;
     let isValid = true;
@@ -61,12 +64,6 @@ export const validateGraph = (cyInstance, difficulty) => {
             title: "Attention !",
             text: "Le graphe n'est pas entièrement coloré.",
         });
-    } else if (difficulty === "Impossible") {
-        Swal.fire({
-            icon: "error",
-            title: "Erreur !",
-            text: "En essayant le graphe, vous venez de comprendre pourquoi il est dans la catégorie impossible.",
-        });
     } else if (!isValid) {
         Swal.fire({
             icon: "error",
@@ -74,17 +71,18 @@ export const validateGraph = (cyInstance, difficulty) => {
             text: "Deux sommets adjacents ont la même couleur.",
         });
     } else {
+        const timeElapsed = stopTimer();
         Swal.fire({
             icon: "success",
             title: "Félicitations !",
-            text: "Bravo ! La coloration est valide.",
+            text: `Bravo ! La coloration est valide en ${timeElapsed}.`,
         });
-    }    
+    }
 };
 
 export const loadPredefinedGraph = async (graphId) => {
     cy.elements().remove();
-    
+
     try {
         const response = await fetch(`/api/graph/${graphId}`);
         if (!response.ok) {
@@ -92,7 +90,7 @@ export const loadPredefinedGraph = async (graphId) => {
         }
 
         const graphConfig = await response.json();
-        console.log(graphConfig);
+
         if (graphConfig?.data) {
 
             graphConfig.data.nodes.forEach(node => {
@@ -106,6 +104,7 @@ export const loadPredefinedGraph = async (graphId) => {
             cy.add(graphConfig.data);
 
             return {
+                name: graphConfig.name,
                 data: graphConfig.data,
                 optimalColoring: graphConfig.optimalColoring || null,
                 pastilleCounts: graphConfig.pastilleCounts || null,
@@ -204,7 +203,7 @@ export const resetColorsDefi = () => {
         for (let i = 0; i < count; i++) {
             cy.add({
                 group: 'nodes',
-                data: { id: `color-${color}-${i}`, isColorNode: true },
+                data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
                 position: { x: currentXPosition, y: 50 },
                 style: {
                     'background-color': color,

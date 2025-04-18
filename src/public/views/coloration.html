@@ -1,14 +1,17 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
     <title>Graph Workbench - Coloration</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="stylesheet" href="/css/style.css">
+    
+    <script src="/js/vendor/cytoscape.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="/js/main.js"></script>
     <script type="module" src="/js/ateliers/coloration/main.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/cytoscape@3.20.0/dist/cytoscape.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -35,10 +38,13 @@
             <div id="graph-select" class="styled-select" style="display: none;">
                 <select id="predefined-graph-select"></select>
             </div>
+            <div id="timer-display" style="font-size: 24px; margin: 15px 0; text-align: center;">
+                Temps: <span id="timer">00:00</span>
+            </div>
             <div id="color-config" style="display: none;">
                 <label for="color-count">Nombre de couleurs (1-12) :</label>
                 <input type="number" id="color-count" min="1" max="12" placeholder="Valeur optionnelle">
-            </div>            
+            </div>
             <div id="dynamic-buttons"></div>
             <div id="cy-predefined" class="cy-container"></div>
         </div>

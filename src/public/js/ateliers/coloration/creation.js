@@ -1,5 +1,5 @@
-import { addDynamicButton, clearDynamicButtons, createRandomNode, highlightNode, resetHighlight } from '../../functions.js';
-import { initGraph, validateGraph, resetColorsLibre } from './functions.js';
+import { addDynamicButton, clearDynamicButtons, createRandomNode, highlightNode, resetHighlight, startTimer } from '../../functions.js';
+import { initGraph, validateGraph, resetColorsLibre, rgbToHex } from './functions.js';
 import { colors } from '../../constants.js';
 
 const colorCountInput = document.getElementById('color-count');
@@ -7,6 +7,8 @@ const colorCountInput = document.getElementById('color-count');
 export const initCreationMode = () => {
 
     const cyCustom = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
+    cyCustom.resize();
+
     const defaultColor = '#cccccc';
 
     let firstNode = null;
@@ -35,10 +37,10 @@ export const initCreationMode = () => {
     addDynamicButton('Réinitialiser le graphe', 'reset-graph-btn', () => {
         Swal.fire({
             title: "Confirmer la suppression",
-            text: `Voulez-vous vraiment rénitialiser le graphe ?`,
+            text: "Voulez-vous vraiment réinitialiser le graphe ?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Oui, supprimer",
+            confirmButtonText: "Oui, réinitialiser",
             cancelButtonText: "Annuler",
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
@@ -97,7 +99,7 @@ export const initCreationMode = () => {
             }
         });
 
-        addDynamicButton('Valider la Coloration', 'validate-graph-btn', () => validateGraph(cyLibre));
+        addDynamicButton('Valider la Coloration', 'validate-graph-btn', () => validateGraph(cyLibre, null));
         addDynamicButton('Réinitialiser la Coloration', 'reset-colors-btn', () => resetColorsLibre(cyLibre));
 
         let colorsConfig;
@@ -106,11 +108,18 @@ export const initCreationMode = () => {
         if (!colorCount) colorsConfig = colors.splice(0, 12);
         else colorsConfig = colors.slice(0, colorCount);
 
-        addInfiniteColorTokens(colorsConfig, cyLibre);
-
+        let currentXPosition = 50;
+        const snapDistance = 50;
         let draggedColor = null;
         let closestNode = null;
-        const snapDistance = 50;
+
+        colorsConfig.forEach((color) => {
+            createColorToken(color, currentXPosition, 50, cyLibre);
+            currentXPosition += 50;
+        });
+
+        cyLibre.layout({ name: 'preset' }).run();
+        startTimer();
 
         cyLibre.on('free', 'node', (evt) => {
             const colorNode = evt.target;
@@ -170,11 +179,23 @@ export const initCreationMode = () => {
             const node = evt.target;
             const currentColor = node.style('background-color');
 
-            if (currentColor !== defaultColor) {
+            if (!node.data('isColorNode') && rgbToHex(currentColor) !== defaultColor) {
                 node.style('background-color', defaultColor);
             }
         });
+
+        cyLibre.on('grab', 'node', (evt) => {
+            const node = evt.target;
+            if (node.data('isColorNode')) {
+                draggedColor = node.style('background-color');
+                createColorToken(draggedColor, node.position('x'), node.position('y'), cyLibre);
+            }
+        });
     });
+
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
+
+    cyCustom.container().addEventListener('contextmenu', (evt) => evt.preventDefault());
 
     cyCustom.on('tap', 'node', (evt) => {
         const clickedNode = evt.target;
@@ -204,10 +225,6 @@ export const initCreationMode = () => {
         }
     });
 
-    document.addEventListener("contextmenu", (event) => event.preventDefault());
-
-    cyCustom.container().addEventListener('contextmenu', (evt) => evt.preventDefault());
-
     cyCustom.on('cxttap', 'node, edge', (evt) => {
         const target = evt.target;
         Swal.fire({
@@ -222,27 +239,16 @@ export const initCreationMode = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 target.remove();
-                Swal.fire("Supprimé!", "L'élément a été supprimé.", "success");
+                Swal.fire("Supprimé !", "L'élément a été supprimé.", "success");
             }
         });
     });
 };
 
-const addInfiniteColorTokens = (colorsConfig, cy) => {
-    let currentXPosition = 50;
-
-    colorsConfig.forEach((color) => {
-        createColorToken(color, currentXPosition, 50, cy);
-        currentXPosition += 50;
-    });
-
-    cy.layout({ name: 'preset' }).run();
-}
-
 const createColorToken = (color, x, y, cy) => {
-    const token = cy.add({
+    cy.add({
         group: 'nodes',
-        data: { id: `color-${color}-${Math.random()}`, isColorNode: true },
+        data: { id: `color-${color}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`, isColorNode: true },
         position: { x, y },
         style: {
             'background-color': color,
@@ -254,10 +260,5 @@ const createColorToken = (color, x, y, cy) => {
             'shape': 'ellipse',
         },
         locked: false,
-    });
-
-    token.on('grab', () => {
-        draggedColor = color;
-        createColorToken(color, x, y, cy);
     });
 }

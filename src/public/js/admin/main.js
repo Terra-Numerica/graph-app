@@ -407,7 +407,12 @@ const handleNodeClick = (node) => {
 	} else if (selectedNode !== node) {
 		cy.add({
 			group: 'edges',
-			data: { source: selectedNode.id(), target: node.id(), controlPointDistance: 0 }
+			data: { 
+				source: selectedNode.id(), 
+				target: node.id(), 
+				controlPointDistance: 0,
+				weight: Math.floor(Math.random() * 10) + 1 
+			}
 		});
 		resetNodeSelection();
 	}

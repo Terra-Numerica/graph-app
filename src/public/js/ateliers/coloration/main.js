@@ -1,8 +1,8 @@
 import { initDefiMode } from './defi.js';
 import { initLibreMode } from './libre.js';
 import { initCreationMode } from './creation.js';
-import { clearDynamicButtons } from '../../functions.js';
 import { MODE_INFO_TEXTS, DOM_ELEMENTS } from './constants.js';
+import { clearDynamicButtons, stopTimer } from '../../functions.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const graphSection = document.querySelector('#graph-section');
@@ -46,12 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	};
 
+	const cyContainer = document.querySelector('#cy-predefined');
+
 	DOM_ELEMENTS.modeDefiBtn.addEventListener('click', () => {
 		graphSection.style.display = 'block';
 		modeTitle.textContent = 'Mode Défi';
 		clearDynamicButtons();
 		selectElement.style.display = 'block';
 		colorConfigInput.style.display = 'none';
+
+		cyContainer.innerHTML = '';
+
+		stopTimer();
 		initDefiMode();
 		displayModeInfo('Défi');
 	});
@@ -62,6 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		clearDynamicButtons();
 		selectElement.style.display = 'block';
 		colorConfigInput.style.display = 'none';
+
+		cyContainer.innerHTML = '';
+
+		stopTimer();
 		initLibreMode();
 		displayModeInfo('Libre');
 	});
@@ -72,6 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		clearDynamicButtons();
 		selectElement.style.display = 'none';
 		colorConfigInput.style.display = 'block';
+
+		cyContainer.innerHTML = '';
+
+		stopTimer();
 		initCreationMode();
 		displayModeInfo('Création');
 	});

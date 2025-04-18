@@ -1,3 +1,6 @@
+let startTime = null;
+let timerInterval = null;
+
 // === Ajout de boutons dynamiques ===
 const dynamicButtons = document.querySelector('#dynamic-buttons');
 
@@ -69,19 +72,20 @@ export const populateGraphSelect = async () => {
         const graphs = await response.json();
 
         const groupedGraphs = {
+            'Très facile': [],
             'Facile': [],
             'Moyen': [],
             'Difficile': [],
-            'Impossible': []
+            'Extrême': []
         };
 
         graphs.forEach(graph => {
             if (groupedGraphs[graph.difficulty]) {
-                if(graph.difficulty === "Impossible") {
-                    groupedGraphs["Difficile"].push(graph);
-                } else {
-                    groupedGraphs[graph.difficulty].push(graph);
-                };
+                groupedGraphs[graph.difficulty].push(graph);
+            } else if (graph.difficulty === 'Impossible-preuve-facile') {
+                groupedGraphs['Moyen'].push(graph);
+            } else if (graph.difficulty === 'Impossible-preuve-difficile') {
+                groupedGraphs['Extrême'].push(graph);
             }
         });
 
@@ -110,3 +114,36 @@ export const populateGraphSelect = async () => {
         });
     }
 };
+
+export const startTimer = () => {
+    const timerElement = document.querySelector('#timer');
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    timerElement.textContent = '00:00';
+    
+    startTime = Date.now();
+    
+    timerInterval = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const minutes = Math.floor(elapsedTime / 60000);
+        const seconds = Math.floor((elapsedTime % 60000) / 1000);
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+export const stopTimer = () => {
+    const timerElement = document.querySelector('#timer');
+    timerElement.textContent = '00:00';
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    const elapsedTime = Date.now() - startTime;
+    const minutes = Math.floor(elapsedTime / 60000);
+    const seconds = Math.floor((elapsedTime % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
