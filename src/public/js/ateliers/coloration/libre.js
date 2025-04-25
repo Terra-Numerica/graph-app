@@ -77,8 +77,6 @@ export const initLibreMode = () => {
 
     function addInfiniteColorTokens(pastilleCounts, cy) {
 
-        console.log(pastilleCounts);
-
         let currentXPosition = 50;
 
         pastilleCounts.forEach((color) => {

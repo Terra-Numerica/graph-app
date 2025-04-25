@@ -1,6 +1,6 @@
-import { initPrimMode } from './prim.js';
-import { initKruskalMode } from './kruskal.js';
-import { initBoruvkaMode } from './boruvka.js';
+import { initPrimAlgorithm } from './prim.js';
+import { initKruskalAlgorithm } from './kruskal.js';
+import { initBoruvkaAlgorithm } from './boruvka.js';
 import { MODE_INFO_TEXTS, DOM_ELEMENTS } from './constants.js';
 import { clearDynamicButtons } from '../../functions.js';
 
@@ -43,28 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DOM_ELEMENTS.modePrimBtn.addEventListener('click', () => {
         graphSection.style.display = 'block';
-        modeTitle.textContent = 'Mode Prim';
+        modeTitle.textContent = 'Algorithme de Prim';
         clearDynamicButtons();
         selectElement.style.display = 'block';
-        initPrimMode();
+        initPrimAlgorithm();
         displayModeInfo('Prim');
     });
 
     DOM_ELEMENTS.modeKruskalBtn.addEventListener('click', () => {
         graphSection.style.display = 'block';
-        modeTitle.textContent = 'Mode Kruskal';
+        modeTitle.textContent = 'Algorithme de Kruskal';
         clearDynamicButtons();
         selectElement.style.display = 'block';
-        initKruskalMode();
+        initKruskalAlgorithm();
         displayModeInfo('Kruskal');
     });
 
     DOM_ELEMENTS.modeBoruvkaBtn.addEventListener('click', () => {
         graphSection.style.display = 'block';
-        modeTitle.textContent = 'Mode Boruvka';
+        modeTitle.textContent = 'Algorithme de Boruvka';
         clearDynamicButtons();
         selectElement.style.display = 'block';
-        initBoruvkaMode();
+        initBoruvkaAlgorithm();
         displayModeInfo('Boruvka');
     });
 }); 

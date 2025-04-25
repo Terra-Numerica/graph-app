@@ -3,16 +3,56 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Graph Workbench - Chemin</title>
-	<link rel="stylesheet" href="/css/style.css">
-	<script type="module" src="/js/main.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/ateliers/chemin.css">
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="/js/vendor/cytoscape.min.js"></script>
+
+	<script type="module" src="/js/main.js"></script>
+	<script type="module" src="/js/ateliers/chemin/main.js"></script>
 </head>
 
 <body>
 
 	<custom-navbar title="Le plus court chemin"></custom-navbar>
 
-	<section class="container"></section>
+	<section class="container chemin">
+		<div>
+			<h2>Choisissez un algorithme</h2>
+			<button id="mode-dijkstra-btn">Algorithme de Dijkstra</button>
+			<button id="mode-bellman-btn">Algorithme de Bellman-Ford</button>
+			<button id="mode-floyd-btn">Algorithme de Floyd-Warshall</button>
+		</div>
+
+		<div id="graph-section" style="display: none;">
+			<h2 id="mode-title"></h2>
+			<div id="info-container" style="display: none; margin-top: 20px;">
+				<button id="info-btn" style="padding: 10px; font-size: 16px;">ℹ️ Voir les règles</button>
+				<div id="info-section" style="display: none; border: 1px solid #ccc; padding: 15px; margin-top: 15px;">
+					<h3>Règles du mode</h3>
+					<p id="info-text"></p>
+				</div>
+			</div>
+			<div id="graph-select" class="styled-select" style="display: none;">
+				<select id="predefined-graph-select"></select>
+			</div>
+			<div id="node-selection" style="display: none; margin: 15px 0;">
+				<div>
+					<label for="start-node">Sommet de départ:</label>
+					<select id="start-node"></select>
+				</div>
+				<div>
+					<label for="end-node">Sommet d'arrivée:</label>
+					<select id="end-node"></select>
+				</div>
+			</div>
+			<div id="dynamic-buttons"></div>
+			<div id="cy-predefined" class="cy-container"></div>
+		</div>
+	</section>
 
 	<custom-footer></custom-footer>
 </body>

@@ -1,7 +1,7 @@
 import { initGraph, loadPredefinedGraph, resetGraph, calculateTotalWeight, isGraphConnected, resetVisualization, startVisualization, stopVisualization, animateNextStep } from './functions.js';
 import { addDynamicButton, populateGraphSelect } from '../../functions.js';
 
-export const initPrimMode = () => {
+export const initPrimAlgorithm = () => {
     const cy = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
     const selectedEdges = new Set();
     let solutionEdges = null;
@@ -156,7 +156,7 @@ export const initPrimMode = () => {
                 Swal.fire({
                     icon: "success",
                     title: "Solution complète !",
-                    text: "Voici l'arbre couvrant de poids minimum.",
+                    text: `Voici l'arbre couvrant de poids minimum. Nombre d'étapes : ${solutionSteps.length}`,
                 });
                 const stateUpdate = stopVisualization('solution-btn', cy, resetPrimSpecificState);
                 isAnimating = stateUpdate.isAnimating;

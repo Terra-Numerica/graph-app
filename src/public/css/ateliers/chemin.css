@@ -1,0 +1,91 @@
+.chemin {
+    display: flex;
+    flex-direction: column;
+}
+
+.cy-container {
+    width: 1000px;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.graph-section {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px 0;
+}
+
+.cy-container {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#path-config {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    width: 25%;
+}
+
+#path-config label {
+    font-weight: bold;
+    color: var(--darkBlue);
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#path-weight {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--grey);
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#path-weight:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 4px rgba(0, 116, 217, 0.3);
+}
+
+#path-weight::-webkit-inner-spin-button, 
+#path-weight::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#path-weight:hover {
+    border-color: var(--blueHover);
+}
+
+/* Styles for path visualization */
+.path-node {
+    transition: all 0.3s ease;
+}
+
+.path-edge {
+    transition: all 0.3s ease;
+}
+
+.start-node {
+    background-color: var(--green);
+}
+
+.end-node {
+    background-color: var(--red);
+}
+
+.path-highlight {
+    stroke: var(--yellow);
+    stroke-width: 3px;
+}
