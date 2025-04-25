@@ -38,6 +38,10 @@ export const initKruskalAlgorithm = () => {
             resetGraph(cy);
             cy.edges().removeClass('selected').removeStyle();
             resetVisualization(cy, 'solution-btn', null);
+
+            cy.nodes().forEach(node => {
+                node.lock();
+            });
         } catch (error) {
             Swal.fire({
                 icon: 'error',

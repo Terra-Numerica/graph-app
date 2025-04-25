@@ -37,6 +37,10 @@ export const initBoruvkaAlgorithm = () => {
             isAnimating = false;
             resetGraph(cy);
             resetVisualization(cy, 'solution-btn', null);
+
+            cy.nodes().forEach(node => {
+                node.lock();
+            });
         } catch (error) {
             Swal.fire({
                 icon: 'error',

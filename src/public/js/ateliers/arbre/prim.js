@@ -73,6 +73,11 @@ export const initPrimAlgorithm = () => {
             resetGraph(cy);
             resetVisualization(cy, 'solution-btn', resetPrimSpecificState);
             initializeNodeLabels();
+
+            cy.nodes().forEach(node => {
+                node.lock();
+            });
+
         } catch (error) {
             Swal.fire({
                 icon: 'error',
