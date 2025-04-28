@@ -20,13 +20,17 @@
 	<custom-navbar title="L'arbre couvrant"></custom-navbar>
 
     <section class="container arbre-couvrant">
-        <div>
-            <h2>Choisissez un algorithme</h2>
-            <button id="mode-prim-btn">Algorithme de Prim</button>
-            <button id="mode-kruskal-btn">Algorithme de Kruskal</button>
-            <button id="mode-boruvka-btn">Algorithme de Boruvka</button>
+        <!-- Explanation Screen -->
+        <div id="explanation-screen">
+            <h2>Qu'est-ce qu'un arbre couvrant de poids minimum ?</h2>
+            <p>
+                Un arbre couvrant de poids minimum est un ensemble d'arêtes qui relie tous les sommets d'un graphe sans former de boucle, avec le poids total le plus petit possible.<br>
+                Imaginez que vous voulez relier toutes les maisons d'un quartier avec le moins de route possible : c'est exactement ce que fait un arbre couvrant minimal !
+            </p>
+            <button id="try-graph-btn">Essayer un graphe</button>
         </div>
 
+        <!-- Graph Interface (initially hidden) -->
         <div id="graph-section" style="display: none;">
             <h2 id="mode-title"></h2>
             <div id="info-container" style="display: none; margin-top: 20px;">
@@ -41,9 +45,14 @@
             </div>
             <div id="dynamic-buttons"></div>
             <div id="cy-predefined" class="cy-container"></div>
+            <div id="step-info-container" style="margin-top: 10px;"></div>
+        </div>
     </section>
 
 	<custom-footer></custom-footer>
+
+    <!-- Solution Modal (SweetAlert2 will be used, but a fallback div can be here if needed) -->
+    <div id="solution-modal" style="display:none;"></div>
 </body>
 
 </html>

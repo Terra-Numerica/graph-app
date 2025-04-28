@@ -1,9 +1,9 @@
-import { initGraph, loadPredefinedGraph, resetGraph, calculateTotalWeight, isGraphConnected, resetVisualization, startVisualization, stopVisualization, animateNextStep } from './functions.js';
+import { initGraph, loadPredefinedGraph, resetGraph, calculateTotalWeight, isGraphConnected, resetVisualization, startVisualization, stopVisualization, animateNextStep, clearStepInfo } from './functions.js';
 import { addDynamicButton, populateGraphSelect } from '../../functions.js';
 
 export const initPrimAlgorithm = () => {
     const cy = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
-    const selectedEdges = new Set();
+    const selectedEdgeIds = new Set();
     let solutionEdges = null;
     let solutionSteps = [];
     let currentStep = 0;
@@ -51,6 +51,7 @@ export const initPrimAlgorithm = () => {
 
     predefinedGraphSelect.addEventListener('change', async () => {
         try {
+            clearStepInfo();
             const graphId = predefinedGraphSelect.value;
             const graphData = await loadPredefinedGraph(graphId);
 
@@ -64,7 +65,7 @@ export const initPrimAlgorithm = () => {
             }
 
             cy.json(graphData);
-            selectedEdges.clear();
+            selectedEdgeIds.clear();
             solutionEdges = null;
             solutionSteps = [];
             currentStep = 0;
@@ -88,7 +89,7 @@ export const initPrimAlgorithm = () => {
     });
 
     addDynamicButton('Valider', 'validate-btn', () => {
-        if (selectedEdges.size === 0) {
+        if (selectedEdgeIds.size === 0) {
             Swal.fire({
                 icon: "warning",
                 title: "Attention",
@@ -97,7 +98,7 @@ export const initPrimAlgorithm = () => {
             return;
         }
 
-        if (!isGraphConnected(cy, selectedEdges)) {
+        if (!isGraphConnected(cy, new Set(Array.from(selectedEdgeIds).map(id => cy.getElementById(id))))) {
             Swal.fire({
                 icon: "error",
                 title: "Incorrect",
@@ -106,7 +107,7 @@ export const initPrimAlgorithm = () => {
             return;
         }
 
-        const userTotalWeight = calculateTotalWeight(Array.from(selectedEdges));
+        const userTotalWeight = calculateTotalWeight(Array.from(selectedEdgeIds).map(id => cy.getElementById(id)));
 
         const optimalEdges = primAlgorithm(cy);
         const optimalTotalWeight = calculateTotalWeight(optimalEdges);
@@ -127,7 +128,7 @@ export const initPrimAlgorithm = () => {
     });
 
     addDynamicButton('Réinitialiser', 'reset-btn', () => {
-        selectedEdges.clear();
+        selectedEdgeIds.clear();
         cy.edges().removeClass('selected');
         solutionMode = false;
         isAnimating = false;
@@ -140,8 +141,15 @@ export const initPrimAlgorithm = () => {
             const stateUpdate = stopVisualization('solution-btn', cy, resetPrimSpecificState);
             isAnimating = stateUpdate.isAnimating;
             solutionMode = stateUpdate.solutionMode;
+            if (solutionEdges) {
+                solutionEdges.forEach(edge => {
+                    const cyEdge = cy.getElementById(edge.id());
+                    selectedEdgeIds.add(cyEdge.id());
+                });
+            }
         } else {
-            const visualizationState = startVisualization(cy, primAlgorithm, generateSolutionSteps, 'solution-btn', resetPrimSpecificState);
+            clearStepInfo();
+            const visualizationState = startVisualization(cy, primAlgorithm, generateSolutionSteps, 'solution-btn', resetPrimSpecificState, 'Prim');
             solutionEdges = visualizationState.solutionEdges;
             solutionSteps = visualizationState.solutionSteps;
             currentStep = visualizationState.currentStep;
@@ -165,32 +173,36 @@ export const initPrimAlgorithm = () => {
                 });
                 const stateUpdate = stopVisualization('solution-btn', cy, resetPrimSpecificState);
                 isAnimating = stateUpdate.isAnimating;
-                solutionMode = stateUpdate.solutionMode;
+                solutionMode = false;
             }
         );
         
         currentStep = updatedState.currentStep;
         
         if (isAnimating) {
-            setTimeout(() => animateNextStepWrapper(), 1000);
+            setTimeout(() => animateNextStepWrapper(), 500);
         }
     }
 
     cy.on('tap', 'edge', (evt) => {
-        if (solutionMode) return;
-
         const edge = evt.target;
+        const edgeId = edge.id();
         const source = edge.source();
         const target = edge.target();
 
-        if (selectedEdges.has(edge)) {
-            selectedEdges.delete(edge);
+        if (selectedEdgeIds.has(edgeId)) {
+            selectedEdgeIds.delete(edgeId);
             edge.removeClass('selected');
+            edge.removeStyle();
             recalculateAllCosts();
         } else {
-            if (canAddEdge(cy, selectedEdges, edge)) {
-                selectedEdges.add(edge);
+            if (canAddEdge(cy, new Set(Array.from(selectedEdgeIds).map(id => cy.getElementById(id))), edge)) {
+                selectedEdgeIds.add(edgeId);
                 edge.addClass('selected');
+                edge.style({
+                    'line-color': '#2ecc71',
+                    'width': 3
+                });
                 updateCostsAfterEdgeSelection(edge);
             } else {
                 Swal.fire({
@@ -203,13 +215,12 @@ export const initPrimAlgorithm = () => {
     });
 
     cy.on('cxttap', 'edge', (evt) => {
-        if (solutionMode) return;
-
         const edge = evt.target;
-
-        if (selectedEdges.has(edge)) {
-            selectedEdges.delete(edge);
+        const edgeId = edge.id();
+        if (selectedEdgeIds.has(edgeId)) {
+            selectedEdgeIds.delete(edgeId);
             edge.removeClass('selected');
+            edge.removeStyle();
             recalculateAllCosts();
         }
     });
@@ -219,7 +230,7 @@ export const initPrimAlgorithm = () => {
         const target = selectedEdge.target();
         const weight = selectedEdge.data('weight');
 
-        if (selectedEdges.size === 1) {
+        if (selectedEdgeIds.size === 1) {
             if (source.data('cost') === 0) {
                 target.data('cost', weight);
                 target.data('prev', source.id());
@@ -249,7 +260,7 @@ export const initPrimAlgorithm = () => {
         const startNode = cy.nodes()[0];
         startNode.data('cost', 0);
 
-        const edgeArray = Array.from(selectedEdges);
+        const edgeArray = Array.from(selectedEdgeIds);
 
         edgeArray.sort((a, b) => {
             const aConnectedToStart = a.source().data('cost') === 0 || a.target().data('cost') === 0;

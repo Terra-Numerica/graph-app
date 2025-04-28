@@ -1,9 +1,9 @@
-import { initGraph, loadPredefinedGraph, resetGraph, calculateTotalWeight, isGraphConnected, resetVisualization, startVisualization, stopVisualization, animateNextStep } from './functions.js';
+import { initGraph, loadPredefinedGraph, resetGraph, calculateTotalWeight, isGraphConnected, resetVisualization, startVisualization, stopVisualization, animateNextStep, clearStepInfo } from './functions.js';
 import { addDynamicButton, populateGraphSelect } from '../../functions.js';
 
 export const initKruskalAlgorithm = () => {
     const cy = initGraph('cy-predefined', { zoomingEnabled: false, panningEnabled: false, boxSelectionEnabled: false });
-    const selectedEdges = new Set();
+    const selectedEdgeIds = new Set();
     let solutionEdges = null;
     let solutionSteps = [];
     let currentStep = 0;
@@ -16,6 +16,7 @@ export const initKruskalAlgorithm = () => {
 
     predefinedGraphSelect.addEventListener('change', async () => {
         try {
+            clearStepInfo();
             const graphId = predefinedGraphSelect.value;
             const graphData = await loadPredefinedGraph(graphId);
 
@@ -29,7 +30,7 @@ export const initKruskalAlgorithm = () => {
             }
 
             cy.json(graphData);
-            selectedEdges.clear();
+            selectedEdgeIds.clear();
             solutionEdges = null;
             solutionSteps = [];
             currentStep = 0;
@@ -52,7 +53,7 @@ export const initKruskalAlgorithm = () => {
     });
 
     addDynamicButton('Valider', 'validate-btn', () => {
-        if (selectedEdges.size === 0) {
+        if (selectedEdgeIds.size === 0) {
             Swal.fire({
                 icon: "warning",
                 title: "Attention",
@@ -61,7 +62,7 @@ export const initKruskalAlgorithm = () => {
             return;
         }
 
-        if (!isGraphConnected(cy, selectedEdges)) {
+        if (!isGraphConnected(cy, new Set(Array.from(selectedEdgeIds).map(id => cy.getElementById(id))))) {
             Swal.fire({
                 icon: "error",
                 title: "Incorrect",
@@ -70,7 +71,7 @@ export const initKruskalAlgorithm = () => {
             return;
         }
 
-        const userTotalWeight = calculateTotalWeight(Array.from(selectedEdges));
+        const userTotalWeight = calculateTotalWeight(Array.from(selectedEdgeIds).map(id => cy.getElementById(id)));
 
         const optimalEdges = kruskalAlgorithm(cy);
         const optimalTotalWeight = calculateTotalWeight(optimalEdges);
@@ -91,7 +92,7 @@ export const initKruskalAlgorithm = () => {
     });
 
     addDynamicButton('Réinitialiser', 'reset-btn', () => {
-        selectedEdges.clear();
+        selectedEdgeIds.clear();
         cy.edges().removeClass('selected').removeStyle();
         solutionMode = false;
         isAnimating = false;
@@ -103,8 +104,16 @@ export const initKruskalAlgorithm = () => {
             const stateUpdate = stopVisualization('solution-btn', cy, null);
             isAnimating = stateUpdate.isAnimating;
             solutionMode = stateUpdate.solutionMode;
+            // Sync selectedEdgeIds with solution edges (by Cytoscape instance)
+            if (solutionEdges) {
+                solutionEdges.forEach(edge => {
+                    const cyEdge = cy.getElementById(edge.id());
+                    selectedEdgeIds.add(cyEdge.id());
+                });
+            }
         } else {
-            const visualizationState = startVisualization(cy, kruskalAlgorithm, generateSolutionSteps, 'solution-btn', null);
+            clearStepInfo();
+            const visualizationState = startVisualization(cy, kruskalAlgorithm, generateSolutionSteps, 'solution-btn', null, 'Kruskal');
             solutionEdges = visualizationState.solutionEdges;
             solutionSteps = visualizationState.solutionSteps;
             currentStep = visualizationState.currentStep;
@@ -128,28 +137,27 @@ export const initKruskalAlgorithm = () => {
                 });
                 const stateUpdate = stopVisualization('solution-btn', cy, null);
                 isAnimating = stateUpdate.isAnimating;
-                solutionMode = stateUpdate.solutionMode;
+                solutionMode = false;
             }
         );
         
         currentStep = updatedState.currentStep;
         
         if (isAnimating) {
-            setTimeout(() => animateNextStepWrapper(), 1000);
+            setTimeout(() => animateNextStepWrapper(), 500);
         }
     }
 
     cy.on('tap', 'edge', (evt) => {
-        if (solutionMode) return;
-
         const edge = evt.target;
+        const edgeId = edge.id();
 
-        if (selectedEdges.has(edge)) {
-            selectedEdges.delete(edge);
+        if (selectedEdgeIds.has(edgeId)) {
+            selectedEdgeIds.delete(edgeId);
             edge.removeClass('selected');
             edge.removeStyle();
         } else {
-            selectedEdges.add(edge);
+            selectedEdgeIds.add(edgeId);
             edge.addClass('selected');
             edge.style({
                 'line-color': '#2ecc71',
@@ -159,12 +167,10 @@ export const initKruskalAlgorithm = () => {
     });
 
     cy.on('cxttap', 'edge', (evt) => {
-        if (solutionMode) return;
-
         const edge = evt.target;
-
-        if (selectedEdges.has(edge)) {
-            selectedEdges.delete(edge);
+        const edgeId = edge.id();
+        if (selectedEdgeIds.has(edgeId)) {
+            selectedEdgeIds.delete(edgeId);
             edge.removeClass('selected');
             edge.removeStyle();
         }
