@@ -20,12 +20,13 @@
 	<custom-navbar title="L'arbre couvrant"></custom-navbar>
 
     <section class="container arbre-couvrant">
-        <div>
-            <h2>Choisissez un algorithme</h2>
-            <button id="try-btn">Essayer un graphe</button>
-            <button id="mode-prim-btn">Algorithme de Prim</button>
-            <button id="mode-kruskal-btn">Algorithme de Kruskal</button>
-            <button id="mode-boruvka-btn">Algorithme de Boruvka</button>
+        <div id="intro-arbre">
+            <h2>Qu'est-ce qu'un arbre couvrant de poids minimal&nbsp;?</h2>
+            <p>
+                Un <strong>arbre couvrant</strong> d'un graphe est un sous-ensemble d'arêtes qui relie tous les sommets sans former de cycle.<br>
+                L'<strong>arbre couvrant de poids minimal</strong> est celui dont la somme des poids des arêtes est la plus petite possible.
+            </p>
+            <button id="mode-try-btn" style="margin-top: 30px;">Essayer un graphe</button>
         </div>
 
         <div id="graph-section" style="display: none;">

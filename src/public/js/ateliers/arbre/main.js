@@ -1,6 +1,4 @@
-import { initPrimAlgorithm } from './prim.js';
-import { initKruskalAlgorithm } from './kruskal.js';
-import { initBoruvkaAlgorithm } from './boruvka.js';
+import { initTryAlgorithm } from './try.js';
 import { MODE_INFO_TEXTS, DOM_ELEMENTS } from './constants.js';
 import { clearDynamicButtons } from '../../functions.js';
 
@@ -12,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoBtn = document.querySelector('#info-btn');
     const infoSection = document.querySelector('#info-section');
     const infoText = document.querySelector('#info-text');
+    const introArbre = document.querySelector('#intro-arbre');
 
     infoBtn.addEventListener("click", function () {
         if (infoSection.style.display === "none" || infoSection.style.display === "") {
@@ -35,36 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'Boruvka':
                 infoText.innerHTML = MODE_INFO_TEXTS.Boruvka;
                 break;
+            case 'Try':
+                infoText.innerHTML = MODE_INFO_TEXTS.Try;
+                break;
             default:
                 infoText.innerHTML = '';
                 break;
         }
     };
 
-    DOM_ELEMENTS.modePrimBtn.addEventListener('click', () => {
+    DOM_ELEMENTS.modeTryBtn.addEventListener('click', () => {
+        introArbre.style.display = 'none';
         graphSection.style.display = 'block';
-        modeTitle.textContent = 'Algorithme de Prim';
+        modeTitle.textContent = 'Essayer un graphe';
         clearDynamicButtons();
         selectElement.style.display = 'block';
-        initPrimAlgorithm();
-        displayModeInfo('Prim');
-    });
-
-    DOM_ELEMENTS.modeKruskalBtn.addEventListener('click', () => {
-        graphSection.style.display = 'block';
-        modeTitle.textContent = 'Algorithme de Kruskal';
-        clearDynamicButtons();
-        selectElement.style.display = 'block';
-        initKruskalAlgorithm();
-        displayModeInfo('Kruskal');
-    });
-
-    DOM_ELEMENTS.modeBoruvkaBtn.addEventListener('click', () => {
-        graphSection.style.display = 'block';
-        modeTitle.textContent = 'Algorithme de Boruvka';
-        clearDynamicButtons();
-        selectElement.style.display = 'block';
-        initBoruvkaAlgorithm();
-        displayModeInfo('Boruvka');
+        initTryAlgorithm();
+        displayModeInfo('Try');
     });
 }); 

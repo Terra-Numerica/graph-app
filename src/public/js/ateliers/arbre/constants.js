@@ -2,6 +2,7 @@ export const DOM_ELEMENTS = {
     modePrimBtn: document.querySelector('#mode-prim-btn'),
     modeKruskalBtn: document.querySelector('#mode-kruskal-btn'),
     modeBoruvkaBtn: document.querySelector('#mode-boruvka-btn'),
+    modeTryBtn: document.querySelector('#mode-try-btn'),
 
     graphSection: document.querySelector('#graph-section'),
     modeTitle: document.querySelector('#mode-title'),
@@ -79,5 +80,26 @@ export const MODE_INFO_TEXTS = {
             <li>Si vous pensez avoir fait une erreur, vous pouvez faire un clic droit sur une arête pour la retirer de l'arbre.</li>
             <li>Si vous voulez recommencer, cliquez sur <strong>Réinitialiser</strong> pour remettre tous les arêtes dans leur état initial.</li>
         </ul>
-    `
+    `,
+    Try: `
+    <h3>🎯 Objectif</h3>
+        <ul>
+            <li>Trouver l'arbre couvrant minimal du graphe en utilisant l'algorithme de Kruskal.</li>
+        <li>L'arbre couvrant minimal est un sous-graphe qui connecte tous les sommets avec un poids total minimal.</li>
+    </ul>
+
+    <h3>🛠️ Comment jouer avec l'algorithme de <strong>Kruskal</strong></h3>
+    <ul>
+        <li>Sélectionnez un graphe prédéfini dans le menu déroulant.</li>
+        <li>Sélectionnez une par une les arrêtes de poids minimal qui ne créent pas de cycle.</li>
+        <li>Quand vous avez sélectionné toutes les arrêtes, l'arbre couvrant minimal est formé.</li>
+    </ul>
+
+    <h3>🔧 Fonctionnalités</h3>
+    <ul>
+        <li>Si vous voulez voir la solution, cliquez sur <strong>Voir la solution</strong>.</li>
+        <li>Si vous pensez avoir fait une erreur, vous pouvez faire un clic droit sur une arête pour la retirer de l'arbre.</li>
+        <li>Si vous voulez recommencer, cliquez sur <strong>Réinitialiser</strong> pour remettre tous les arêtes dans leur état initial.</li>
+    </ul>
+`,
 };
