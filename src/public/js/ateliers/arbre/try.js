@@ -112,6 +112,31 @@ export const initTryAlgorithm = () => {
     solutionButtonsContainer.style.marginTop = '20px';
     solutionButtonsContainer.style.textAlign = 'center';
     
+    // Create steps container
+    const stepsContainer = document.createElement('div');
+    stepsContainer.className = 'steps-container';
+    stepsContainer.style.backgroundColor = 'white';
+    stepsContainer.style.padding = '15px';
+    stepsContainer.style.margin = '20px auto';
+    stepsContainer.style.borderRadius = '5px';
+    stepsContainer.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    stepsContainer.style.maxWidth = '600px';
+    stepsContainer.style.display = 'none';
+    stepsContainer.style.overflowY = 'auto';
+    stepsContainer.style.maxHeight = '200px';
+    
+    const stepsTitle = document.createElement('h4');
+    stepsTitle.textContent = 'Étapes de l\'algorithme :';
+    stepsTitle.style.marginBottom = '10px';
+    stepsTitle.style.color = '#333';
+    stepsContainer.appendChild(stepsTitle);
+    
+    const stepsList = document.createElement('div');
+    stepsList.className = 'steps-list';
+    stepsContainer.appendChild(stepsList);
+    
+    document.querySelector('#cy-predefined').parentNode.appendChild(stepsContainer);
+    
     const solutionTitle = document.createElement('h3');
     solutionTitle.textContent = 'Solutions selon les algorithmes :';
     solutionTitle.style.marginBottom = '15px';
@@ -213,11 +238,12 @@ export const initTryAlgorithm = () => {
         // Update mode title
         document.querySelector('#mode-title').textContent = `Solution selon l'algorithme de ${algorithmName}`;
         
-        // Ne plus masquer les boutons de solutions
-        // solutionButtonsContainer.style.display = 'none';
-        
         // Clear any existing dynamic buttons
         clearDynamicButtons();
+        
+        // Show steps container
+        stepsContainer.style.display = 'block';
+        stepsList.innerHTML = '';
         
         // Add back button
         addDynamicButton('Retour', 'back-btn', () => {
@@ -231,6 +257,9 @@ export const initTryAlgorithm = () => {
             cy.edges().removeClass('selected').removeStyle();
             cy.nodes().removeClass('start-node').removeStyle();
             resetVisualization(cy, 'solution-btn', null);
+            
+            // Hide steps container
+            stepsContainer.style.display = 'none';
             
             // Masquer la section du mode essai
             document.querySelector('#graph-section').style.display = 'none';
@@ -248,67 +277,49 @@ export const initTryAlgorithm = () => {
                 isAnimating = stateUpdate.isAnimating;
                 solutionMode = stateUpdate.solutionMode;
             } else {
-                const visualizationState = startVisualization(cy, algorithm, generateSteps, 'solution-btn', null);
-                solutionEdges = visualizationState.solutionEdges;
-                solutionSteps = visualizationState.solutionSteps;
-                currentStep = visualizationState.currentStep;
-                solutionMode = visualizationState.solutionMode;
-                isAnimating = visualizationState.isAnimating;
+                solutionMode = true;
+                isAnimating = true;
                 currentAlgorithm = algorithmName;
                 
-                // Highlight start node for Prim algorithm
-                if (algorithmName === 'Prim') {
-                    const startNode = cy.nodes()[0];
-                    startNode.addClass('start-node');
-                    startNode.style({
-                        'background-color': '#3498db',
-                        'border-width': 3,
-                        'border-color': '#2980b9'
-                    });
-                }
+                // Generate and display steps
+                solutionSteps = generateSteps(cy, algorithmEdges);
+                currentStep = 0;
                 
+                // Update steps display
+                updateStepsDisplay();
+                
+                // Start visualization
+                startVisualization(cy, 'solution-btn', null);
                 animateNextStepWrapper();
             }
         });
-        
-        // Set solution mode
-        solutionMode = true;
-        currentAlgorithm = algorithmName;
-        
-        // Show solution info
-        Swal.fire({
-            icon: "info",
-            title: `Solution selon l'algorithme de ${algorithmName}`,
-            html: `
-                <p>Vous êtes maintenant en mode solution pour l'algorithme de ${algorithmName}.</p>
-                <p>Cliquez sur "Voir la solution" pour visualiser l'algorithme étape par étape.</p>
-                <p>Cliquez sur "Retour" pour revenir au mode essai.</p>
-            `,
+    }
+
+    function updateStepsDisplay() {
+        stepsList.innerHTML = '';
+        solutionSteps.forEach((step, index) => {
+            const stepElement = document.createElement('div');
+            stepElement.textContent = step;
+            stepElement.style.padding = '5px 0';
+            stepElement.style.borderBottom = index < solutionSteps.length - 1 ? '1px solid #eee' : 'none';
+            stepElement.style.color = index === currentStep ? '#3498db' : '#666';
+            stepElement.style.fontWeight = index === currentStep ? 'bold' : 'normal';
+            stepsList.appendChild(stepElement);
         });
     }
-    
+
     function animateNextStepWrapper() {
         if (!isAnimating) return;
         
-        const updatedState = animateNextStep(
-            { isAnimating, currentStep, solutionSteps, solutionMode },
-            cy,
-            () => {
-                Swal.fire({
-                    icon: "success",
-                    title: "Solution complète !",
-                    text: `Voici l'arbre couvrant de poids minimum selon l'algorithme de ${currentAlgorithm}. Nombre d'étapes : ${solutionSteps.length}`,
-                });
-                const stateUpdate = stopVisualization('solution-btn', cy, null);
-                isAnimating = stateUpdate.isAnimating;
-                solutionMode = stateUpdate.solutionMode;
-            }
-        );
-        
-        currentStep = updatedState.currentStep;
-        
-        if (isAnimating) {
-            setTimeout(() => animateNextStepWrapper(), 1000);
+        const step = animateNextStep(cy, solutionSteps, currentStep);
+        if (step) {
+            currentStep = step;
+            updateStepsDisplay();
+            setTimeout(animateNextStepWrapper, 1000);
+        } else {
+            isAnimating = false;
+            solutionMode = false;
+            currentAlgorithm = null;
         }
     }
     
